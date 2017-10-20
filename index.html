@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <label for="cookie">请输入可用ssoid：</label>
+  <input type="text" id="cookie" style="width:300px">
+  <br>
+  <br>
+  <button id="start">启动脚本</button>
+  <br>
+  <br>
+  <button id="end">结束</button>
+  <br>
+  <br>
+  <div id="info" style="color:red"></div>
+  <script>
+    var xmlhttp;
+    if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp = new XMLHttpRequest();
+    }
+    else {// code for IE6, IE5
+      xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    var ssoidInput = document.getElementById('cookie');
+    var startBtn = document.getElementById('start');
+    var endBtn = document.getElementById('end');
+    var info = document.getElementById('info');
+
+    window.onload = function () {
+      xmlhttp.open("GET", "/get", true);
+      xmlhttp.send();
+    }
+
+    startBtn.onclick = function () {
+      if (!ssoidInput.value) {
+        info.innerHTML = "请输入ssoid！！！";
+        return;
+      }
+
+      xmlhttp.open("POST", "/start", true);
+      xmlhttp.setRequestHeader("Content-type", "application/json");
+      xmlhttp.send(JSON.stringify({
+        ssoid: ssoidInput.value
+      }));
+    }
+
+    endBtn.onclick = function() {
+      xmlhttp.open("GET", "/end", true);
+      xmlhttp.send();
+    }
+
+    xmlhttp.onreadystatechange = function () {
+      if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        info.innerHTML = xmlhttp.responseText;
+      }
+    }
+  </script>
+</body>
+
+</html>

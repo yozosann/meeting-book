@@ -28,23 +28,19 @@ var opt = {
   json: null
 };
 
-function meeting(setTime, bookTime, minutes, weekday, room, cookieString, atUser) {
+function meeting(setTime, bookTime, minutes, weekday, room, atUser) {
   var timer;
-
-  var j = request.jar();
-  var cookie = request.cookie(cookieString);
-  j.setCookie(cookie, url);
-
-  opt.jar = j;
-
   paramJson.room = room;
+  paramJson.user = atUser;
 
-  if(atUser) {
-    paramJson.user = atUser;
-  }
+  return function cycleBook(cookieString) {
+    var j = request.jar();
+    var cookie = request.cookie(cookieString);
+    j.setCookie(cookie, url);
+  
+    opt.jar = j;
 
-  return function cycleBook() {
-    timer = setInterval(function() {
+    return timer = setInterval(function() {
       if(moment().weekday() == weekday && moment() > moment().set(bookTime)) {
         console.log('开始预定...');
 
@@ -59,7 +55,9 @@ function meeting(setTime, bookTime, minutes, weekday, room, cookieString, atUser
         book(opt, function() {
           console.log('预定成功...');
           clearInterval(timer);
-          setTimeout(cycleBook, 60 * 60 * 24 * 7 * 1000 - 500);
+        }, function(){
+          console.log('会议室被抢...');
+          clearInterval(timer);
         });
       } else {
         // console.log('时间未到...');
@@ -68,7 +66,7 @@ function meeting(setTime, bookTime, minutes, weekday, room, cookieString, atUser
   }
 }
 
-function book(options, cb) {
+function book(options, success, lose) {
   request.post(options, function (err, response, body) {
     if (err) {
       console.log(err);
@@ -78,7 +76,9 @@ function book(options, cb) {
     body && console.log(body.data);
 
     if(!body.data.errorCode) {
-      cb();
+      success();
+    } else if(body.data.errorCode == 1405){
+      lose();
     } else {
       console.log('下一秒继续抢...')
     };
