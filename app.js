@@ -35,7 +35,7 @@ var setTime = { 'hour': 15, 'minute': 0, 'second': 0, 'millisecond': 0 };
 
 // 什么时候开始抢
 // var bookTime = { 'hour': 8, 'minute': 30, 'second': 51, 'millisecond': 0 };
-var bookTime = { 'hour': 8, 'minute': 0, 'second': 30, 'millisecond': 0 };
+var bookTime = { 'hour': 8, 'minute': 0, 'second': 10, 'millisecond': 0 };
 
 // 周几抢 （例如周五使用的会议室 就应该周六抢）
 // var weekday = 5;
